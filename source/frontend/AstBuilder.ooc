@@ -7,7 +7,7 @@ import nagaqueen/OocListener
 import ParsingPool
 
 import ast/[Module, FuncDecl, Call, Statement, Type, Expression,
-    Var, Access, StringLit, NumberLit, Import, Node, Return]
+    Var, Access, StringLit, NumberLit, Import, Node, Return, If]
 import middle/Resolver
 
 /**
@@ -222,6 +222,16 @@ AstBuilder: class extends OocListener {
         Access new(expr, name toString())
     }
 
+    onIfStart: func(expr: Expression) {
+        "yaay, got an if" println()
+        stack push(If new(expr))
+    }
+
+    onIfEnd: func -> If {
+        "yoo, got an if-end" println()
+        pop(If)
+    }
+
     /*
      * Statement
      */
@@ -243,6 +253,8 @@ AstBuilder: class extends OocListener {
             case mod: Module =>
                 //"Got statement %s in module body" printfln(statement toString())
                 mod body add(statement)
+            case myIf: If =>
+                myIf body add(statement)
             case =>
                 match (node class) {
                     case List =>

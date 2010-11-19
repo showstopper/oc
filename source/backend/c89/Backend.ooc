@@ -1,6 +1,6 @@
 
 import ast/[Module, Node, FuncDecl, Access, Var, Scope, Type,
-    Call, StringLit, NumberLit, Statement, Expression, Return]
+    Call, StringLit, NumberLit, Statement, Expression, Return, If]
 import text/EscapeSequence
 
 import structs/[HashMap, ArrayList, List]
@@ -32,7 +32,7 @@ Backend: class extends StackBackend {
         put(FuncDecl, |fd| visitFuncDecl(fd as FuncDecl))
         put(StringLit, |sl| visitStringLit(sl as StringLit))
         put(NumberLit, |sl| visitNumberLit(sl as NumberLit))
-        
+        put(If, |i| visitIf(i as If))    
     	visitModule(module)
     }
     
@@ -140,6 +140,13 @@ Backend: class extends StackBackend {
         body
 	}
     
+    visitIf: func(i: If) -> CIf {
+
+        myIf := _if(visitExpr(i expr)) 
+        i body body each(|stat| myIf body add(visitStat(stat)))
+        myIf
+    }
+
     ctype: func (t: Type) -> CType {
         match t {
             case b: BaseType =>

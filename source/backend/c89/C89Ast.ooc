@@ -265,6 +265,26 @@ CCall: class extends CExpr {
     
 }
 
+_if: func (cond: CExpr) -> CIf { CIf new(cond) }
+
+CIf: class extends CExpr {
+    cond: CExpr 
+    body := ArrayList<CStatement> new()
+
+    init: func(=cond) {}
+
+    write: func(w: OcWriter) {
+        w app("if")
+        if (cond) {
+            w app(" (")
+            cond write(w)
+            w app(") ")
+        }
+        w writeBlock(body, ";", |stat| stat write(w))
+        w nl()
+    }
+}
+
 int: func (val: Int64) -> CIntLiteral { CIntLiteral new(val) }
 
 CIntLiteral: class extends CExpr {
